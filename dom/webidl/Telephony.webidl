@@ -16,8 +16,11 @@ interface Telephony : EventTarget {
    * |navigator.mozMobileConnections.length|.
    */
 
+  /**
+   * Make a phone call or send the mmi code depending on the number provided.
+   */
   [Throws]
-  Promise<TelephonyCall> dial(DOMString number, optional unsigned long serviceId);
+  Promise<(TelephonyCall or MMIRequest)> dial(DOMString number, optional unsigned long serviceId);
 
   [Throws]
   Promise<TelephonyCall> dialEmergency(DOMString number, optional unsigned long serviceId);
