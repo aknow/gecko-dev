@@ -2386,6 +2386,10 @@ RilObject.prototype = {
     // We don't have to parse mmi in cdma.
     if (!this._isCdma) {
       options.mmi = this._parseMMI(options.number);
+      if (options.mmi) {
+        options.mmiServiceCode =
+          this._serviceCodeToKeyString(options.mmi.serviceCode);
+      }
     }
     this.sendChromeMessage(options);
   },
@@ -2562,7 +2566,7 @@ RilObject.prototype = {
       case MMI_SC_BA_MT:
         return MMI_KS_SC_CALL_BARRING;
       case MMI_SC_CALL_WAITING:
-        return MMI_SC_CALL_WAITING;
+        return MMI_KS_SC_CALL_WAITING;
       default:
         return MMI_KS_SC_USSD;
     }
@@ -2573,7 +2577,7 @@ RilObject.prototype = {
       this.context.debug("SendMMI " + JSON.stringify(options));
     }
 
-    let mmi = this._parseMMI(options.mmi);
+    let mmi = options.parsedMMI ? options.parsedMMI : this._parseMMI(options.mmi);
     if (DEBUG) {
       this.context.debug("MMI " + JSON.stringify(mmi));
     }
@@ -6013,6 +6017,22 @@ RilObject.prototype[REQUEST_SET_CALL_FORWARD] =
         break;
     }
   }
+
+  // It's a dial request from telephony.
+  if (options.parsedMMI) {
+    let notifyOptions = {
+      rilMessageType: "notifyCFStateChanged",
+      success: !options.errorMsg,
+      action: options.action,
+      reason: options.reason,
+      number: options.number,
+      timeSeconds: options.timeSeconds,
+      serviceClass: options.serviceClass
+    };
+
+    this.sendChromeMessage(notifyOptions);
+  }
+
   this.sendChromeMessage(options);
 };
 RilObject.prototype[REQUEST_QUERY_CALL_WAITING] =
