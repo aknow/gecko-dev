@@ -176,20 +176,80 @@ interface nsITelephonyListener : nsISupports
                              in AString message);
 };
 
-[scriptable, uuid(553f3bf2-e938-4995-9914-36e10599bc78)]
+%{C++
+#define NO_INFORMATION 0
+%}
+
+/**
+ * A callback interface for handling asynchronous response of Telephony.dial().
+ */
+[scriptable, builtinclass, uuid(bb8e2145-072a-4691-aa55-80d602c4dfa1)]
 interface nsITelephonyCallback : nsISupports
 {
   /**
+   * Called when a dial request is treated as an MMI code and it is about to
+   * process the request.
+   *
+   * @param serviceCode
+   *        MMI service code key string that defined in MMI_KS_SC_*
+   */
+  void notifyDialMMI(in AString serviceCode);
+
+  /**
    * Called when a dial request fails.
+   *
    * @param error
    *        Error from RIL.
    */
   void notifyDialError(in AString error);
 
   /**
-   * Called when a dial request succeeds.
+   * Called when a dial request is treated as a call setup and the result
+   * succeeds.
+   *
+   * @param callIndex
+   *        Call index from RIL.
+   * @param number
+   *        Dialed out phone number (ex: Temporary CLIR prefix will be removed)
    */
   void notifyDialCallSuccess(in unsigned long callIndex, in AString number);
+
+  /**
+   * Called when a MMI code request succeeds.
+   * The function should only be called after notifyDialMMI.
+   *
+   * @param result
+   *        Result of the request. See MozMMIResult.
+   */
+  void notifyDialMMISuccess(in jsval result);
+
+  /**
+   * Called when a MMI code request fails.
+   * The function should only be called after notifyDialMMI.
+   *
+   * @param error
+   *        Error from RIL
+   * @param info
+   *        Additional information
+   *        - PIN/PUK access: indicates the remainging retry count
+   */
+  [optional_argc]
+  void notifyDialMMIError(in AString error, [optional] in unsigned short info);
+
+%{C++
+  // non-virtual so it won't affect the vtable
+  inline nsresult NotifyDialMMIError(const nsAString& aError)
+  {
+    return NotifyDialMMIError(aError, NO_INFORMATION, 0 /* ARGC = 0 */);
+  }
+
+  // non-virtual so it won't affect the vtable
+  inline nsresult NotifyDialMMIError(const nsAString& aError, uint16_t aInfo)
+  {
+    return NotifyDialMMIError(aError, aInfo, 1 /* ARGC = 1 */);
+  }
+%}
+
 };
 
 %{C++
