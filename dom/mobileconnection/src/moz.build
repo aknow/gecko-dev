@@ -6,6 +6,7 @@
 
 EXPORTS.mozilla.dom += [
     'DOMMMIError.h',
+    'ipc/MobileConnectionIPCSerializer.h',
     'MobileCellInfo.h',
     'MobileConnection.h',
     'MobileConnectionArray.h',

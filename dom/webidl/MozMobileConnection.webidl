@@ -665,21 +665,21 @@ dictionary MozMMIResult
    * request. The UI is supposed to handle the localization of the strings
    * associated with this string key.
    */
-  DOMString serviceCode;
+  DOMString serviceCode = "";
 
   /**
    * String key containing the status message of the associated MMI request.
    * The UI is supposed to handle the localization of the strings associated
    * with this string key.
    */
-  DOMString statusMessage;
+  DOMString statusMessage = "";
 
   /**
    * Some MMI requests like call forwarding or PIN/PIN2/PUK/PUK2 related
    * requests provide extra information along with the status message, this
    * information can be a number, a string key or an array of string keys.
    */
-  any additionalInformation;
+  (unsigned short or object) additionalInformation;
 };
 
 dictionary MozClirStatus
