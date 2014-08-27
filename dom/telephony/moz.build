@@ -34,6 +34,7 @@ UNIFIED_SOURCES += [
     'MMIRequest.cpp',
     'Telephony.cpp',
     'TelephonyCall.cpp',
+    'TelephonyCallback.cpp',
     'TelephonyCallGroup.cpp',
     'TelephonyCallId.cpp',
     'TelephonyFactory.cpp',
